@@ -59,7 +59,6 @@ function endTest() {
 	beginTime = -1;
 	$("button#submit").html("Retry");
 	$("div#status").html("Test Finished. Hit the Retry button or press Enter to try again.");
-	//clearInterval(myVar);
 	if ($("input[name='roption']:checked").val() == "time")
 		window.clearInterval(endTimer);
 	window.clearInterval(updater);
@@ -84,13 +83,7 @@ function update(click) {
 		clickTimes.push(Date.now());
 		if (clickTimes.length > 1)
 			timediffs.push(clickTimes[clickTimes.length - 1] - clickTimes[clickTimes.length - 2]);
-
-		//streamtime = (Date.now() - beginTime)/1000;
-		//$("div#Result").html("\
-		//	Tap Speed: " + (clickTimes.length.toString() + " taps / " + streamtime) + " seconds.<br>\
-		//	Stream Speed: " + (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000)/4) * 100) / 100) + " bpm.<br>\
-		//	Unstable Rate: " + (Math.round(unstableRate * 100000) / 100000) + ".\
-		//");
+			
 	} else {
 		streamtime = (Date.now() - beginTime)/1000;
 		if (timediffs.length < 2) {
@@ -117,13 +110,12 @@ $(document).keypress(function(event)
     {
         //if (String.fromCharCode(event.which) == key1 || String.fromCharCode(event.which) == key2)
         //{
-            if ((String.fromCharCode(event.which) == key1) || (String.fromCharCode(event.which) == key2)) // Any reason there are two of these?
+            if ((String.fromCharCode(event.which) == key1) || (String.fromCharCode(event.which) == key2)) // Any reason there are two of these? Removed one...
             {
                 switch (beginTime)
                 {
                     case -1:
                         beginTime = Date.now();
-                        //clickTimes[0] = beginTime;
                         $("div#status").html("Test currently running.");
 						updater = setInterval(function() { update(false); }, 16.6);
 						
