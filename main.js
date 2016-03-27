@@ -1,4 +1,5 @@
 // i suck at variable naming
+// don't worry we all do
 
 clickTimes = [];
 deviations = [];
@@ -155,4 +156,55 @@ $(document).ready(function() {
 		$("input#clickTime").val("10");
 	else
 		$("input#clickTime").val(localStorage.getItem('timeLimit'));
+	
+	var dps = []; // dataPoints
+
+	var chart = new CanvasJS.Chart("bpmchart",{
+		title :{
+			text: "BPM Chart"
+		},			
+		data: [{
+			type: "line",
+			dataPoints: dps 
+		}]
+	});
+
+	var xVal = 0;
+	var yVal = 0;	
+	var updateInterval = 100;
+	var dataLength = 50; // number of dataPoints visible at any point
+
+	var updateChart = function () {
+		if (testRunning) {} else {return;} // I forget if you can use !bool in js, so this is safe until I change it
+		//count = count || 1;
+		// count is number of times loop runs to generate random dataPoints.
+		
+		/*for (var j = 0; j < count; j++) {	
+			yVal = yVal +  Math.round(5 + Math.random() *(-5-5));
+			dps.push({
+				x: xVal,
+				y: yVal
+			});
+			xVal++;
+		};*/
+		// bpm = (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000)/4) * 100) / 100).toFixed(2)
+		dps.push({
+			x: (Date.now() - beginTime()),
+			y: (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000)/4) * 100) / 100)
+		});
+		};
+		if (dps.length > dataLength)
+		{
+			dps.shift();				
+		}
+		
+		chart.render();		
+
+	};
+
+	// generates first set of dataPoints
+	updateChart(dataLength); 
+
+	// update chart after specified time. 
+	setInterval(function(){updateChart()}, updateInterval); 
 });
