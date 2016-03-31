@@ -4,7 +4,14 @@
 clickTimes = [];
 deviations = [];
 timediffs = [];
-testrunning = false;
+testrunning = false; // the lack of camelcase is screwing with me, TODO <----
+
+var xVal = 0;
+var yVal = 0;	
+var updateInterval = 100;
+var dataLength = 50; // number of dataPoints visible at any point
+var dps = []; // dataPoints
+	
 function beginTest() {
     testrunning = true;
     clickLimit = Math.round(parseInt(document.getElementById('clickNum').value));
@@ -40,6 +47,7 @@ function beginTest() {
     std = 0;
 	$("button#submit").hide();
 	$("button#stopbtn").show();
+	dps = [];
     return true;
 }
 
@@ -99,6 +107,14 @@ function update(click) {
 			Stream Speed: " + (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000)/4) * 100) / 100).toFixed(2) + " bpm.<br>\
 			Unstable Rate: " + (Math.round(unstableRate * 100000) / 100000).toFixed(3) + "\
 		");
+		dps.push({
+			x: (Date.now() - beginTime),
+			y: (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000)/4) * 100) / 100)
+		});
+		if (dps.length > dataLength)
+		{
+			dps.shift();				
+		}
 		}
 	}
 }
@@ -157,7 +173,7 @@ $(document).ready(function() {
 	else
 		$("input#clickTime").val(localStorage.getItem('timeLimit'));
 	
-	var dps = []; // dataPoints
+
 
 	var chart = new CanvasJS.Chart("bpmchart",{
 		title :{
@@ -168,43 +184,13 @@ $(document).ready(function() {
 			dataPoints: dps 
 		}]
 	});
-
-	var xVal = 0;
-	var yVal = 0;	
-	var updateInterval = 100;
-	var dataLength = 50; // number of dataPoints visible at any point
-
-	var updateChart = function () {
-		if (testRunning) {} else {return;} // I forget if you can use !bool in js, so this is safe until I change it
-		//count = count || 1;
-		// count is number of times loop runs to generate random dataPoints.
-		
-		/*for (var j = 0; j < count; j++) {	
-			yVal = yVal +  Math.round(5 + Math.random() *(-5-5));
-			dps.push({
-				x: xVal,
-				y: yVal
-			});
-			xVal++;
-		};*/
-		// bpm = (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000)/4) * 100) / 100).toFixed(2)
-		dps.push({
-			x: (Date.now() - beginTime()),
-			y: (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000)/4) * 100) / 100)
-		});
-		};
-		if (dps.length > dataLength)
-		{
-			dps.shift();				
+	var renChart = function() {
+		if (dps.length > 0) {
+			chart.render();
 		}
-		
-		chart.render();		
-
 	};
 
-	// generates first set of dataPoints
-	updateChart(dataLength); 
 
 	// update chart after specified time. 
-	setInterval(function(){updateChart()}, updateInterval); 
+	setInterval(function(){renChart()}, updateInterval); 
 });
