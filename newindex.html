@@ -7,7 +7,8 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"/></script>
-    <script src="main.js"/></script>
+    <script src="canvasjs-1.8.0/jquery.canvasjs.min.js"></script>
+    <script src="newmain.js"/></script>
     <title>you suck at streaming v2</title>
     <img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
 
@@ -23,6 +24,24 @@
     <style>
       body {
         background: #59CCF2 !important;
+      }
+      /* Sticky footer styles
+	-------------------------------------------------- */
+      html {
+	position: relative;
+	min-height: 100%;
+      }
+      body {
+	/* Margin bottom by footer height */
+	margin-bottom: 60px;
+      }
+      .footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	/* Set the fixed height of the footer here */
+	height: 40px;
+	background-color: #11a4d4;
       }
     </style>
   </head>
@@ -61,18 +80,21 @@
     <button id="submit" onclick = "beginTest()" type="button">Begin Test</button><br />
     <button id="stopbtn" onClick="endTest()" type="button" style="display:none">Stop Test</button><br />
     
-    <div id = "status">Time starts when you make your first click.</div>
+    <div id="status">Time starts when you make your first click.</div>
     <h3>Your Results:</h3>
-    <div id = "Result">
+    <div id="Result">
       Tap Speed: 0 taps / 0 seconds.<br />
       Stream Speed: 0 bpm.<br />
       Unstable Rate: 0.
     </div>
     
+    <div id="chartContainer" class="container">
+      
+    </div>
     
     </div>
     
-    <footer class="footer">
+    <footer class="footer" style="text-align:left">
       <div class="container">
 	Original by arctic, rewritten by Ckris<br>
         <a href="https://github.com/ckrisirkc/osuStreamSpeed.js">View Source on Github</a>
