@@ -41,13 +41,14 @@ function beginTest() {
         Unstable Rate: 0.\
     ");
     localStorage.setItem('clickLimit', clickLimit);
-	localStorage.setItem('timeLimit', timeLimit);
+    localStorage.setItem('timeLimit', timeLimit);
     localStorage.setItem('key1', key1);
     localStorage.setItem('key2', key2);
     std = 0;
-	$("button#submit").hide();
-	$("button#stopbtn").show();
-	dps = [];
+    $("button#submit").hide();
+    $("button#stopbtn").show();
+    dps = [];
+    $("#chartContainer").CanvasJSChart().render();
     return true;
 }
 
@@ -111,10 +112,16 @@ function update(click) {
 		    x: (Date.now() - beginTime),
 		    y: (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000)/4) * 100) / 100)
 	    });
-	    if (dps.length > dataLength)
-	    {
-		    dps.shift();				
-	    }
+	    var chart = $("#chartContainer").CanvasJSChart();
+	    chart.options.data[0].dataPoints.push({
+		    x: (Date.now() - beginTime),
+		    y: (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000)/4) * 100) / 100)
+	    });
+	    chart.render();
+	    //if (dps.length > dataLength)
+	    //{
+		//    dps.shift();				
+	    //}
 	}
     }
 }
@@ -156,6 +163,7 @@ $(document).keypress(function(event)
 });
 
 $(document).ready(function() {
+    //console.log("hi");
     if(!localStorage.getItem('clickLimit'))
         $("input#clickNum").val("20");
     else
@@ -173,23 +181,23 @@ $(document).ready(function() {
 	else
 	    $("input#clickTime").val(localStorage.getItem('timeLimit'));
     
-    //TODO: Modify this vvvvv
-    $(".chartContainer").CanvasJSChart({
+    $("#chartContainer").CanvasJSChart({
 		    title: {
-			    text: "Monthly Rainfall in Columbus - 1996"
+			    text: "BPM Chart"
 		    },
 		    axisY: {
-			    title: "Rainfall in mm",
+			    title: "BPM",
 			    includeZero: false
 		    },
 		    axisX: {
+			    title: "Time",
 			    interval: 1
 		    },
 		    data: [
 		    {
 			    type: "line", //try changing to column, area
-			    toolTipContent: "{label}: {y} mm",
-			    dataPoints: [
+			    //toolTipContent: "{label}: {y} mm",
+			    /*dataPoints: [
 				    { label: "Jan",  y: 5.28 },
 				    { label: "Feb",  y: 3.83 },
 				    { label: "March",y: 6.55 },
@@ -202,7 +210,8 @@ $(document).ready(function() {
 				    { label: "Oct",  y: 2.17 },
 				    { label: "Nov",  y: 2.17 },
 				    { label: "Dec",  y: 2.80 }
-			    ]
+			    ]*/
+			    dataPoints: dps
 		    }
 		    ]
     });
@@ -224,7 +233,31 @@ $(document).ready(function() {
 
 
 	// update chart after specified time. 
+	
 	setInterval(function(){renChart()}, updateInterval); */
+});
+/*
+$(function() {
+    console.log("hi");
+    $(".chartContainer").CanvasJSChart({
+		    title: {
+			    text: "BPM Chart"
+		    },
+		    axisY: {
+			    title: "BPM",
+			    includeZero: false
+		    },
+		    axisX: {
+			    title: "Time",
+			    interval: 1
+		    },
+		    data: [
+		    {
+			    type: "line", //try changing to column, area
+			    dataPoints: dps
+		    }
+		    ]
+    });
 });
 
 /* Paste stuff yay--
