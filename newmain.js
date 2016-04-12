@@ -10,7 +10,29 @@ var xVal = 0;
 var yVal = 0;	
 var updateInterval = 100;
 var dataLength = 50; // number of dataPoints visible at any point
-var dps = []; // dataPoints
+//var dps = []; // dataPoints
+var runNumber = 0;
+var counterNumber = 0;
+
+var baseData = {
+	    type: "spline", //try changing to column, area
+	    //toolTipContent: "{label}: {y} mm",
+	    /*dataPoints: [
+		    { label: "Jan",  y: 5.28 },
+		    { label: "Feb",  y: 3.83 },
+		    { label: "March",y: 6.55 },
+		    { label: "April",y: 4.81 },
+		    { label: "May",  y: 2.37 },
+		    { label: "June", y: 2.33 },
+		    { label: "July", y: 3.06 },
+		    { label: "Aug",  y: 2.94 },
+		    { label: "Sep",  y: 5.41 },
+		    { label: "Oct",  y: 2.17 },
+		    { label: "Nov",  y: 2.17 },
+		    { label: "Dec",  y: 2.80 }
+	    ]*/
+	    dataPoints: []
+};
 	
 function beginTest() {
     testrunning = true;
@@ -47,8 +69,16 @@ function beginTest() {
     std = 0;
     $("button#submit").hide();
     $("button#stopbtn").show();
-    dps = [];
+    //dps = [];
+    if (runNumber > 0) {
+	$("#chartContainer").CanvasJSChart().options.data.push({
+	    type: "spline",
+	    dataPoints: []
+	});
+	$("#chartContainer").CanvasJSChart().options.data[runNumber - 1].visible = false;
+    }
     $("#chartContainer").CanvasJSChart().render();
+    counterNumber = 0;
     return true;
 }
 
@@ -74,6 +104,7 @@ function endTest() {
     window.clearInterval(updater);
     $("button#submit").show();
     $("button#stopbtn").hide();
+    runNumber = runNumber + 1;
     return;
 }
 
@@ -93,8 +124,17 @@ function update(click) {
 	clickTimes.push(Date.now());
 	if (clickTimes.length > 1)
 		timediffs.push(clickTimes[clickTimes.length - 1] - clickTimes[clickTimes.length - 2]);
-		    
+	
+	if (clickTimes.length > 2) {
+	    var chart = $("#chartContainer").CanvasJSChart();
+		chart.options.data[runNumber].dataPoints.push({
+			x: (Date.now() - beginTime)/1000.0,
+			y: (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000)/4) * 100) / 100)
+		});
+		chart.render();
+	}
     } else {
+	counterNumber = (counterNumber + 1) % 30;
 	streamtime = (Date.now() - beginTime)/1000;
 	if (timediffs.length < 2) {
 		$("div#Result").html("\
@@ -108,16 +148,18 @@ function update(click) {
 		    Stream Speed: " + (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000)/4) * 100) / 100).toFixed(2) + " bpm.<br>\
 		    Unstable Rate: " + (Math.round(unstableRate * 100000) / 100000).toFixed(3) + "\
 	    ");
-	    dps.push({
-		    x: (Date.now() - beginTime),
+	    /*dps.push({
+		    x: (Date.now() - beginTime)/1000.0,
 		    y: (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000)/4) * 100) / 100)
-	    });
-	    var chart = $("#chartContainer").CanvasJSChart();
-	    chart.options.data[0].dataPoints.push({
-		    x: (Date.now() - beginTime),
-		    y: (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000)/4) * 100) / 100)
-	    });
-	    chart.render();
+	    });*/
+	    if (counterNumber == 0) {
+		var chart = $("#chartContainer").CanvasJSChart();
+		chart.options.data[runNumber].dataPoints.push({
+			x: (Date.now() - beginTime)/1000.0,
+			y: (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000)/4) * 100) / 100)
+		});
+		chart.render();
+	    }
 	    //if (dps.length > dataLength)
 	    //{
 		//    dps.shift();				
@@ -141,13 +183,13 @@ $(document).keypress(function(event)
                     case -1:
                         beginTime = Date.now();
                         $("div#status").html("Test currently running.");
-						updater = setInterval(function() { update(false); }, 16.6);
+			updater = setInterval(function() { update(false); }, 16.6);
 						
-						if ($("input[name='roption']:checked").val() == "time") {
-							endTimer = setTimeout(function() {
-								endTest();
-							}, timeLimit * 1000);
-						}
+			if ($("input[name='roption']:checked").val() == "time") {
+				endTimer = setTimeout(function() {
+					endTest();
+				}, timeLimit * 1000);
+			}
                     default:
                         update(true);
                         break;
@@ -182,6 +224,8 @@ $(document).ready(function() {
 	    $("input#clickTime").val(localStorage.getItem('timeLimit'));
     
     $("#chartContainer").CanvasJSChart({
+		    zoomEnabled: true,
+		    exportEnabled: true,
 		    title: {
 			    text: "BPM Chart"
 		    },
@@ -191,11 +235,11 @@ $(document).ready(function() {
 		    },
 		    axisX: {
 			    title: "Time",
-			    interval: 1
+			    //interval: 1
 		    },
 		    data: [
 		    {
-			    type: "line", //try changing to column, area
+			    type: "spline", //try changing to column, area
 			    //toolTipContent: "{label}: {y} mm",
 			    /*dataPoints: [
 				    { label: "Jan",  y: 5.28 },
@@ -211,7 +255,7 @@ $(document).ready(function() {
 				    { label: "Nov",  y: 2.17 },
 				    { label: "Dec",  y: 2.80 }
 			    ]*/
-			    dataPoints: dps
+			    dataPoints: []
 		    }
 		    ]
     });
